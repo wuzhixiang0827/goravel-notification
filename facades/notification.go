@@ -1,8 +1,8 @@
 package facades
 
 import (
-	"goravel/packages/notification"
-	"goravel/packages/notification/contracts"
+	notification "github.com/wuzhixiang0827/goravel-notification"
+	"github.com/wuzhixiang0827/goravel-notification/contracts"
 )
 
 // Send 发送通知

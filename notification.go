@@ -3,8 +3,8 @@ package notification
 import (
 	"errors"
 	"github.com/goravel/framework/contracts/foundation"
-	"goravel/packages/notification/channels"
-	"goravel/packages/notification/contracts"
+	"github.com/wuzhixiang0827/goravel-notification/channels"
+	"github.com/wuzhixiang0827/goravel-notification/contracts"
 	"sync"
 )
 

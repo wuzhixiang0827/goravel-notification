@@ -3,7 +3,7 @@ package channels
 import (
 	"encoding/json"
 	"fmt"
-	"goravel/packages/notification/contracts"
+	"github.com/wuzhixiang0827/goravel-notification/contracts"
 	"time"
 )
 

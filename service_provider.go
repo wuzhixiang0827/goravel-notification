@@ -34,7 +34,7 @@ func (r *ServiceProvider) Register(app foundation.Application) {
 func (r *ServiceProvider) Boot(app foundation.Application) {
 	Boot(app)
 
-	app.Publishes("github.com/wuzhixiang0827/goravel-notification", map[string]string{
+	app.Publishes("https://github.com/wuzhixiang0827/goravel-notification", map[string]string{
 		"migrations": app.DatabasePath("migrations"),
 	})
 }

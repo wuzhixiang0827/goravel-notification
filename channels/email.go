@@ -2,7 +2,7 @@ package channels
 
 import (
 	"fmt"
-	"goravel/packages/notification/contracts"
+	"github.com/wuzhixiang0827/goravel-notification/contracts"
 )
 
 // EmailChannel 默认邮件通道
