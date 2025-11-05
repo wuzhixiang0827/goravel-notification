@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/json"
+	"github.com/goravel/framework/support/str"
 	"github.com/wuzhixiang0827/goravel-notification/contracts"
 	"github.com/wuzhixiang0827/goravel-notification/models"
 )
@@ -24,7 +25,7 @@ func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notification con
 	notificationModel.ID = uuid.New().String()
 	notificationModel.Data = jsonData
 	notificationModel.NotifiableId = notifiable.ParamsForNotification("id").(string)
-	notificationModel.NotifiableType = fmt.Sprintf("%T", notifiable)
+	notificationModel.NotifiableType = str.Of(fmt.Sprintf("%T", notifiable)).Replace("*", "").String()
 	notificationModel.Type = fmt.Sprintf("%T", notification)
 
 	if err := facades.Orm().Query().Model(&models.Notification{}).Create(&notificationModel); err != nil {
