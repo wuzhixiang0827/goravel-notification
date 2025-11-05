@@ -27,7 +27,7 @@ func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notification con
 	notificationModel.NotifiableType = fmt.Sprintf("%T", notifiable)
 	notificationModel.Type = fmt.Sprintf("%T", notification)
 
-	if err := facades.Orm().Query().Model(&models.Notification{}).Create(&notification); err != nil {
+	if err := facades.Orm().Query().Model(&models.Notification{}).Create(&notificationModel); err != nil {
 		return err
 	}
 

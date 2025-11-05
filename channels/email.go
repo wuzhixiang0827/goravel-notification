@@ -16,9 +16,9 @@ func (c *EmailChannel) Send(notifiable contracts.Notifiable, notif contracts.Not
 		return err
 	}
 
-	email := notifiable.ParamsForNotification("mail").(string)
+	email := notifiable.ParamsForNotification("email").(string)
 	if email == "" {
-		return fmt.Errorf("[EmailChannel] notifiable has no email route")
+		return fmt.Errorf("[EmailChannel] notifiable has no email")
 	}
 
 	content := msg["content"].(string)

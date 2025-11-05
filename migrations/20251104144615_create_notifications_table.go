@@ -16,13 +16,16 @@ func (r *M20251104144615CreateNotificationsTable) Signature() string {
 func (r *M20251104144615CreateNotificationsTable) Up() error {
 	if !facades.Schema().HasTable("notifications") {
 		return facades.Schema().Create("notifications", func(table schema.Blueprint) {
-			table.ID()
+			table.String("id").Comment("ID")
 			table.String("type").Nullable().Comment("通知类型")
 			table.String("notifiable_type").Nullable().Comment("通知对象类型")
 			table.UnsignedBigInteger("notifiable_id").Nullable().Comment("通知对象ID")
 			table.Text("data").Nullable().Comment("通知数据")
 			table.Timestamp("read_at").Nullable().Comment("已读时间")
 			table.TimestampsTz()
+
+			table.Primary("id")
+			table.Index("notifiable_type", "notifiable_id")
 		})
 	}
 
