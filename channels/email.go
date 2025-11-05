@@ -2,6 +2,8 @@ package channels
 
 import (
 	"fmt"
+	"github.com/goravel/framework/facades"
+	"github.com/goravel/framework/mail"
 	"github.com/wuzhixiang0827/goravel-notification/contracts"
 )
 
@@ -14,13 +16,20 @@ func (c *EmailChannel) Send(notifiable contracts.Notifiable, notif contracts.Not
 		return err
 	}
 
-	email := notifiable.RouteNotificationFor("mail")
+	email := notifiable.ParamsForNotification("mail").(string)
 	if email == "" {
 		return fmt.Errorf("[EmailChannel] notifiable has no email route")
 	}
 
-	// TODO: 实际环境下可调用 Goravel 的 mail 组件
-	fmt.Printf("[EmailChannel] send mail to %s\nSubject: %s\nBody: %s\n",
-		email, msg.Subject, msg.Body)
+	content := msg["content"].(string)
+	subject := msg["subject"].(string)
+
+	if err := facades.Mail().To([]string{email}).
+		Content(mail.Html(content)).
+		Subject(subject).
+		Queue(); err != nil {
+		return err
+	}
+
 	return nil
 }

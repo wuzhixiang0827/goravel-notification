@@ -1,28 +1,35 @@
 package channels
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/goravel/framework/facades"
+	"github.com/goravel/framework/support/json"
 	"github.com/wuzhixiang0827/goravel-notification/contracts"
-	"time"
+	"github.com/wuzhixiang0827/goravel-notification/models"
 )
 
 // DatabaseChannel 默认数据库通道
 type DatabaseChannel struct{}
 
-func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notif contracts.Notification) error {
-	data, err := notif.ToDatabase(notifiable)
+func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notification contracts.Notification) error {
+	data, err := notification.ToDatabase(notifiable)
 	if err != nil {
 		return err
 	}
 
-	jsonData, _ := json.Marshal(data)
+	jsonData, _ := json.MarshalString(data)
 
-	// TODO: 可使用 Goravel ORM 保存到 notifications 表
-	fmt.Printf("[DatabaseChannel] store for %s at %s: %s\n",
-		notifiable.RouteNotificationFor("database"),
-		time.Now().Format(time.RFC3339),
-		string(jsonData),
-	)
+	var notificationModel models.Notification
+	notificationModel.ID = uuid.New().String()
+	notificationModel.Data = jsonData
+	notificationModel.NotifiableId = notifiable.ParamsForNotification("id").(string)
+	notificationModel.NotifiableType = fmt.Sprintf("%T", notifiable)
+	notificationModel.Type = fmt.Sprintf("%T", notification)
+
+	if err := facades.Orm().Query().Model(&models.Notification{}).Create(&notification); err != nil {
+		return err
+	}
+
 	return nil
 }
