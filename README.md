@@ -4,8 +4,6 @@
 
 Goravel Notification 是一个仿 Laravel Notification 机制开发的 Go 语言扩展包， 用于在 Goravel 框架 中实现灵活的消息通知系统。
 
-## 安装
-
 ### 主要功能
 
 - 📬 多通道通知系统
@@ -26,6 +24,8 @@ Goravel Notification 是一个仿 Laravel Notification 机制开发的 Go 语言
 - 🧠 与 Goravel 完美集成
   遵循 Goravel 的 ServiceProvider、Facade 机制，
   使用体验与 Laravel Notification 基本一致。
+
+## 安装
 
 ```
 
