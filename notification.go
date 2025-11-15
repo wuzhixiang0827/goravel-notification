@@ -58,6 +58,6 @@ func Send(notifiable contracts.Notifiable, notif contracts.Notification) error {
 
 // Boot: 注册内置默认通道（mail, database）
 func Boot(app foundation.Application) {
-	RegisterChannel("mail", &channels.EmailChannel{})
+	RegisterChannel("email", &channels.EmailChannel{})
 	RegisterChannel("database", &channels.DatabaseChannel{})
 }
