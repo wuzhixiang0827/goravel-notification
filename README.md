@@ -29,20 +29,20 @@ Goravel Notification 是一个仿 Laravel Notification 机制开发的 Go 语言
 
 ```
 
-go clean -i github.com/wuzhixiang0827/goravel-notification
+go get github.com/wuzhixiang0827/goravel-notification
 go run . artisan package:install github.com/wuzhixiang0827/goravel-notification
-```
-
-## 卸载
-
-```
-go run . artisan package:uninstall github.com/wuzhixiang0827/goravel-notification
 ```
 
 ## 发布资源
 
 ```
 go run . artisan vendor:publish --package=github.com/wuzhixiang0827/goravel-notification
+```
+
+## 卸载
+
+```
+go run . artisan package:uninstall github.com/wuzhixiang0827/goravel-notification
 ```
 
 ## 注册迁移文件
@@ -69,32 +69,36 @@ go run . artisan migrate
 app/notifications/verification_code_notification.go
 
 ```
+
 package notifications
 
-import "github.com/wuzhixiang0827/goravel-notification/contracts"
+import (
+	"fmt"
+	"github.com/wuzhixiang0827/goravel-notification/contracts"
+)
 
-type WelcomeNotification struct{}
+type VerificationCodeNotification struct {
+	Code string
+}
 
-func (n WelcomeNotification) Via(notifiable contracts.Notifiable) []string {
+func (n VerificationCodeNotification) Via(notifiable contracts.Notifiable) []string {
 	return []string{
-		"mail",
+		"email",
 		"database",
 	}
 }
 
-func (n WelcomeNotification) ToMail(notifiable contracts.Notifiable) (map[string]interface{}, error) {
+func (n VerificationCodeNotification) ToEmail(notifiable contracts.Notifiable) (map[string]interface{}, error) {
 	return map[string]interface{}{
-		"subject": "Welcome!",
-		"content": "Hello and welcome to Goravel!",
+		"subject": "【xxxx】Verification Code",
+		"content": fmt.Sprintf("<h1>Your verification code is : %s</h1>", n.Code),
 	}, nil
 }
 
-func (n WelcomeNotification) ToDatabase(notifiable contracts.Notifiable) (map[string]interface{}, error) {
-	return map[string]interface{}{
-		"title": "Welcome Notification",
-		"body":  "You have successfully registered.",
-	}, nil
+func (n VerificationCodeNotification) ToDatabase(notifiable contracts.Notifiable) (map[string]interface{}, error) {
+	return n.ToEmail(notifiable)
 }
+
 
 ```
 
@@ -103,7 +107,7 @@ func (n WelcomeNotification) ToDatabase(notifiable contracts.Notifiable) (map[st
 app/models/user.go
 
 ```
-func (u *User) ParamsForNotification(channel string) any {
+func (u *User) RouteNotificationFor(channel string) any {
 	switch channel {
 	case "id":
 		return convert.MustString(u.ID)
@@ -112,6 +116,7 @@ func (u *User) ParamsForNotification(channel string) any {
 	}
 	return ""
 }
+
 ```
 
 ## 发送通知
@@ -129,6 +134,8 @@ if err := notificationFacades.Send(user, notif); err != nil {
 
 #### 创建通道
 
+app/notifications/channels/slack_channel.go
+
 ```
 package channels
 
@@ -140,12 +147,12 @@ import (
 // SlackChannel 自定义 Slack 通道
 type SlackChannel struct{}
 
-func (c *SlackChannel) Send(notifiable contracts.Notifiable, notif contracts.Notification) error {
-	data, err := notif.ToDatabase(notifiable) // 复用数据结构
+func (c *SlackChannel) Send(notifiable contracts.Notifiable, notif interface{}) error {
+    data, err := CallToMethod(notif, "ToSlack", notifiable)
 	if err != nil {
-		return err
+		return fmt.Errorf("[SlackChannel] %s", err.Error())
 	}
-
+	
 	slackWebhook := notifiable.RouteNotificationFor("slack")
 	if slackWebhook == "" {
 		return fmt.Errorf("[SlackChannel] user has no slack webhook route")
