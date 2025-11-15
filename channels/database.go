@@ -14,9 +14,9 @@ import (
 type DatabaseChannel struct{}
 
 func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notif interface{}) error {
-	data, err := CallToMethod(notif, "toDatabase", notifiable)
+	data, err := CallToMethod(notif, "ToDatabase", notifiable)
 	if err != nil {
-		return fmt.Errorf("[DatabaseChannel] notifiable has no email")
+		return fmt.Errorf("[DatabaseChannel] %s", err.Error())
 	}
 
 	jsonData, _ := json.MarshalString(data)

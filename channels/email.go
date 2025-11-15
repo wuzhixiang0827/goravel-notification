@@ -11,9 +11,9 @@ import (
 type EmailChannel struct{}
 
 func (c *EmailChannel) Send(notifiable contracts.Notifiable, notif interface{}) error {
-	data, err := CallToMethod(notif, "toEmail", notifiable)
+	data, err := CallToMethod(notif, "ToEmail", notifiable)
 	if err != nil {
-		return fmt.Errorf("[EmailChannel] notifiable has no email")
+		return fmt.Errorf("[EmailChannel] %s", err.Error())
 	}
 
 	email := notifiable.RouteNotificationFor("email").(string)
