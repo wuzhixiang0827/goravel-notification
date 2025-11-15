@@ -10,19 +10,19 @@ import (
 // EmailChannel 默认邮件通道
 type EmailChannel struct{}
 
-func (c *EmailChannel) Send(notifiable contracts.Notifiable, notif contracts.Notification) error {
-	msg, err := notif.ToMail(notifiable)
+func (c *EmailChannel) Send(notifiable contracts.Notifiable, notif interface{}) error {
+	data, err := CallToMethod(notif, "toEmail", notifiable)
 	if err != nil {
-		return err
+		return fmt.Errorf("[EmailChannel] notifiable has no email")
 	}
 
-	email := notifiable.ParamsForNotification("email").(string)
+	email := notifiable.RouteNotificationFor("email").(string)
 	if email == "" {
 		return fmt.Errorf("[EmailChannel] notifiable has no email")
 	}
 
-	content := msg["content"].(string)
-	subject := msg["subject"].(string)
+	content := data["content"].(string)
+	subject := data["subject"].(string)
 
 	if err := facades.Mail().To([]string{email}).
 		Content(mail.Html(content)).

@@ -127,7 +127,7 @@ if err := notificationFacades.Send(user, notif); err != nil {
 
 ## 扩展channel
 
-创建通道
+#### 创建通道
 
 ```
 package channels
@@ -157,7 +157,9 @@ func (c *SlackChannel) Send(notifiable contracts.Notifiable, notif contracts.Not
 }
 ```
 
-注册通道
+#### 注册通道
+
+app_service_provider.go boot 方法 中添加
 
 ```
 notification.RegisterChannel("slack", &channels.SlackChannel{})

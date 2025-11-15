@@ -13,10 +13,10 @@ import (
 // DatabaseChannel 默认数据库通道
 type DatabaseChannel struct{}
 
-func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notification contracts.Notification) error {
-	data, err := notification.ToDatabase(notifiable)
+func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notif interface{}) error {
+	data, err := CallToMethod(notif, "toDatabase", notifiable)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DatabaseChannel] notifiable has no email")
 	}
 
 	jsonData, _ := json.MarshalString(data)
@@ -24,9 +24,9 @@ func (c *DatabaseChannel) Send(notifiable contracts.Notifiable, notification con
 	var notificationModel models.Notification
 	notificationModel.ID = uuid.New().String()
 	notificationModel.Data = jsonData
-	notificationModel.NotifiableId = notifiable.ParamsForNotification("id").(string)
+	notificationModel.NotifiableId = notifiable.RouteNotificationFor("id").(string)
 	notificationModel.NotifiableType = str.Of(fmt.Sprintf("%T", notifiable)).Replace("*", "").String()
-	notificationModel.Type = fmt.Sprintf("%T", notification)
+	notificationModel.Type = fmt.Sprintf("%T", notif)
 
 	if err := facades.Orm().Query().Model(&models.Notification{}).Create(&notificationModel); err != nil {
 		return err
